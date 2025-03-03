@@ -1,6 +1,7 @@
 import logging, os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 from flask_migrate import Migrate
 from config import Config
 from flask_login import LoginManager
@@ -9,15 +10,17 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
+mail = Mail()
 login.login_view = 'routes.login'
 
-def create_app():
+def create_app(config_inst=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_inst)
 
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
+    mail.init_app(app)
 
     from app.errors.error import bp as errors_bp
     app.register_blueprint(errors_bp)
