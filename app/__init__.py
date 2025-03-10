@@ -1,8 +1,10 @@
 import logging, os
-from flask import Flask
+from flask import Flask, request, current_app
+from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_moment import Moment
 from config import Config
 from flask_login import LoginManager
 from logging.handlers import SMTPHandler, RotatingFileHandler
@@ -11,7 +13,12 @@ db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 mail = Mail()
+moment = Moment()
+babel = Babel()
 login.login_view = 'routes.login'
+
+def get_locale():
+    return request.accept_languages.best_match(current_app.config['LANGUAGES'])
 
 def create_app(config_inst=Config):
     app = Flask(__name__)
@@ -21,6 +28,8 @@ def create_app(config_inst=Config):
     migrate.init_app(app, db)
     login.init_app(app)
     mail.init_app(app)
+    moment.init_app(app)
+    babel.init_app(app, locale_selector=get_locale)
 
     from app.errors.error import bp as errors_bp
     app.register_blueprint(errors_bp)

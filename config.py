@@ -17,6 +17,8 @@ class Config:
 
     POSTS_PER_PAGE = 24
 
+    LANGUAGES = ['en', 'ru', 'es']
+
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATBASE_URI', 'sqlite:///:memory:')
